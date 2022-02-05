@@ -1,0 +1,523 @@
+Terminals unused in grammar
+
+    MOD
+
+
+State 31 conflicts: 6 shift/reduce
+State 33 conflicts: 6 shift/reduce
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: expr SPLIT
+
+    2 expr: NUM
+    3     | expr PLUS expr
+    4     | expr MINUS expr
+    5     | expr MULT expr
+    6     | expr DIV expr
+    7     | FUNCTION VAR LPAR expr RPAR expr
+    8     | FUNCTION VAR LPAR RPAR expr
+    9     | RETURN LPAR expr RPAR
+   10     | VAR
+   11     | LPAR expr RPAR
+   12     | expr SPLIT expr
+   13     | expr ASSIGN expr
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256)
+    RETURN (258) 9
+    SPLIT (259) 1 12
+    VAR (260) 7 8 10
+    ASSIGN (261) 13
+    PLUS (262) 3
+    MINUS (263) 4
+    MULT (264) 5
+    DIV (265) 6
+    MOD (266)
+    LPAR (267) 7 8 9 11
+    RPAR (268) 7 8 9 11
+    NUM (269) 2
+    FUNCTION (270) 7 8
+
+
+Nonterminals, with rules where they appear
+
+    $accept (16)
+        on left: 0
+    expr (17)
+        on left: 2 3 4 5 6 7 8 9 10 11 12 13
+        on right: 1 3 4 5 6 7 8 9 11 12 13
+    program (18)
+        on left: 1
+        on right: 0
+
+
+State 0
+
+    0 $accept: . program $end
+
+    RETURN    shift, and go to state 1
+    VAR       shift, and go to state 2
+    LPAR      shift, and go to state 3
+    NUM       shift, and go to state 4
+    FUNCTION  shift, and go to state 5
+
+    expr     go to state 6
+    program  go to state 7
+
+
+State 1
+
+    9 expr: RETURN . LPAR expr RPAR
+
+    LPAR  shift, and go to state 8
+
+
+State 2
+
+   10 expr: VAR .
+
+    $default  reduce using rule 10 (expr)
+
+
+State 3
+
+   11 expr: LPAR . expr RPAR
+
+    RETURN    shift, and go to state 1
+    VAR       shift, and go to state 2
+    LPAR      shift, and go to state 3
+    NUM       shift, and go to state 4
+    FUNCTION  shift, and go to state 5
+
+    expr  go to state 9
+
+
+State 4
+
+    2 expr: NUM .
+
+    $default  reduce using rule 2 (expr)
+
+
+State 5
+
+    7 expr: FUNCTION . VAR LPAR expr RPAR expr
+    8     | FUNCTION . VAR LPAR RPAR expr
+
+    VAR  shift, and go to state 10
+
+
+State 6
+
+    1 program: expr . SPLIT
+    3 expr: expr . PLUS expr
+    4     | expr . MINUS expr
+    5     | expr . MULT expr
+    6     | expr . DIV expr
+   12     | expr . SPLIT expr
+   13     | expr . ASSIGN expr
+
+    SPLIT   shift, and go to state 11
+    ASSIGN  shift, and go to state 12
+    PLUS    shift, and go to state 13
+    MINUS   shift, and go to state 14
+    MULT    shift, and go to state 15
+    DIV     shift, and go to state 16
+
+
+State 7
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 17
+
+
+State 8
+
+    9 expr: RETURN LPAR . expr RPAR
+
+    RETURN    shift, and go to state 1
+    VAR       shift, and go to state 2
+    LPAR      shift, and go to state 3
+    NUM       shift, and go to state 4
+    FUNCTION  shift, and go to state 5
+
+    expr  go to state 18
+
+
+State 9
+
+    3 expr: expr . PLUS expr
+    4     | expr . MINUS expr
+    5     | expr . MULT expr
+    6     | expr . DIV expr
+   11     | LPAR expr . RPAR
+   12     | expr . SPLIT expr
+   13     | expr . ASSIGN expr
+
+    SPLIT   shift, and go to state 19
+    ASSIGN  shift, and go to state 12
+    PLUS    shift, and go to state 13
+    MINUS   shift, and go to state 14
+    MULT    shift, and go to state 15
+    DIV     shift, and go to state 16
+    RPAR    shift, and go to state 20
+
+
+State 10
+
+    7 expr: FUNCTION VAR . LPAR expr RPAR expr
+    8     | FUNCTION VAR . LPAR RPAR expr
+
+    LPAR  shift, and go to state 21
+
+
+State 11
+
+    1 program: expr SPLIT .
+   12 expr: expr SPLIT . expr
+
+    RETURN    shift, and go to state 1
+    VAR       shift, and go to state 2
+    LPAR      shift, and go to state 3
+    NUM       shift, and go to state 4
+    FUNCTION  shift, and go to state 5
+
+    $default  reduce using rule 1 (program)
+
+    expr  go to state 22
+
+
+State 12
+
+   13 expr: expr ASSIGN . expr
+
+    RETURN    shift, and go to state 1
+    VAR       shift, and go to state 2
+    LPAR      shift, and go to state 3
+    NUM       shift, and go to state 4
+    FUNCTION  shift, and go to state 5
+
+    expr  go to state 23
+
+
+State 13
+
+    3 expr: expr PLUS . expr
+
+    RETURN    shift, and go to state 1
+    VAR       shift, and go to state 2
+    LPAR      shift, and go to state 3
+    NUM       shift, and go to state 4
+    FUNCTION  shift, and go to state 5
+
+    expr  go to state 24
+
+
+State 14
+
+    4 expr: expr MINUS . expr
+
+    RETURN    shift, and go to state 1
+    VAR       shift, and go to state 2
+    LPAR      shift, and go to state 3
+    NUM       shift, and go to state 4
+    FUNCTION  shift, and go to state 5
+
+    expr  go to state 25
+
+
+State 15
+
+    5 expr: expr MULT . expr
+
+    RETURN    shift, and go to state 1
+    VAR       shift, and go to state 2
+    LPAR      shift, and go to state 3
+    NUM       shift, and go to state 4
+    FUNCTION  shift, and go to state 5
+
+    expr  go to state 26
+
+
+State 16
+
+    6 expr: expr DIV . expr
+
+    RETURN    shift, and go to state 1
+    VAR       shift, and go to state 2
+    LPAR      shift, and go to state 3
+    NUM       shift, and go to state 4
+    FUNCTION  shift, and go to state 5
+
+    expr  go to state 27
+
+
+State 17
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 18
+
+    3 expr: expr . PLUS expr
+    4     | expr . MINUS expr
+    5     | expr . MULT expr
+    6     | expr . DIV expr
+    9     | RETURN LPAR expr . RPAR
+   12     | expr . SPLIT expr
+   13     | expr . ASSIGN expr
+
+    SPLIT   shift, and go to state 19
+    ASSIGN  shift, and go to state 12
+    PLUS    shift, and go to state 13
+    MINUS   shift, and go to state 14
+    MULT    shift, and go to state 15
+    DIV     shift, and go to state 16
+    RPAR    shift, and go to state 28
+
+
+State 19
+
+   12 expr: expr SPLIT . expr
+
+    RETURN    shift, and go to state 1
+    VAR       shift, and go to state 2
+    LPAR      shift, and go to state 3
+    NUM       shift, and go to state 4
+    FUNCTION  shift, and go to state 5
+
+    expr  go to state 22
+
+
+State 20
+
+   11 expr: LPAR expr RPAR .
+
+    $default  reduce using rule 11 (expr)
+
+
+State 21
+
+    7 expr: FUNCTION VAR LPAR . expr RPAR expr
+    8     | FUNCTION VAR LPAR . RPAR expr
+
+    RETURN    shift, and go to state 1
+    VAR       shift, and go to state 2
+    LPAR      shift, and go to state 3
+    RPAR      shift, and go to state 29
+    NUM       shift, and go to state 4
+    FUNCTION  shift, and go to state 5
+
+    expr  go to state 30
+
+
+State 22
+
+    3 expr: expr . PLUS expr
+    4     | expr . MINUS expr
+    5     | expr . MULT expr
+    6     | expr . DIV expr
+   12     | expr . SPLIT expr
+   12     | expr SPLIT expr .
+   13     | expr . ASSIGN expr
+
+    PLUS   shift, and go to state 13
+    MINUS  shift, and go to state 14
+    MULT   shift, and go to state 15
+    DIV    shift, and go to state 16
+
+    $default  reduce using rule 12 (expr)
+
+
+State 23
+
+    3 expr: expr . PLUS expr
+    4     | expr . MINUS expr
+    5     | expr . MULT expr
+    6     | expr . DIV expr
+   12     | expr . SPLIT expr
+   13     | expr . ASSIGN expr
+   13     | expr ASSIGN expr .
+
+    SPLIT  shift, and go to state 19
+    PLUS   shift, and go to state 13
+    MINUS  shift, and go to state 14
+    MULT   shift, and go to state 15
+    DIV    shift, and go to state 16
+
+    $default  reduce using rule 13 (expr)
+
+
+State 24
+
+    3 expr: expr . PLUS expr
+    3     | expr PLUS expr .
+    4     | expr . MINUS expr
+    5     | expr . MULT expr
+    6     | expr . DIV expr
+   12     | expr . SPLIT expr
+   13     | expr . ASSIGN expr
+
+    MINUS  shift, and go to state 14
+    MULT   shift, and go to state 15
+    DIV    shift, and go to state 16
+
+    $default  reduce using rule 3 (expr)
+
+
+State 25
+
+    3 expr: expr . PLUS expr
+    4     | expr . MINUS expr
+    4     | expr MINUS expr .
+    5     | expr . MULT expr
+    6     | expr . DIV expr
+   12     | expr . SPLIT expr
+   13     | expr . ASSIGN expr
+
+    MULT  shift, and go to state 15
+    DIV   shift, and go to state 16
+
+    $default  reduce using rule 4 (expr)
+
+
+State 26
+
+    3 expr: expr . PLUS expr
+    4     | expr . MINUS expr
+    5     | expr . MULT expr
+    5     | expr MULT expr .
+    6     | expr . DIV expr
+   12     | expr . SPLIT expr
+   13     | expr . ASSIGN expr
+
+    DIV  shift, and go to state 16
+
+    $default  reduce using rule 5 (expr)
+
+
+State 27
+
+    3 expr: expr . PLUS expr
+    4     | expr . MINUS expr
+    5     | expr . MULT expr
+    6     | expr . DIV expr
+    6     | expr DIV expr .
+   12     | expr . SPLIT expr
+   13     | expr . ASSIGN expr
+
+    $default  reduce using rule 6 (expr)
+
+
+State 28
+
+    9 expr: RETURN LPAR expr RPAR .
+
+    $default  reduce using rule 9 (expr)
+
+
+State 29
+
+    8 expr: FUNCTION VAR LPAR RPAR . expr
+
+    RETURN    shift, and go to state 1
+    VAR       shift, and go to state 2
+    LPAR      shift, and go to state 3
+    NUM       shift, and go to state 4
+    FUNCTION  shift, and go to state 5
+
+    expr  go to state 31
+
+
+State 30
+
+    3 expr: expr . PLUS expr
+    4     | expr . MINUS expr
+    5     | expr . MULT expr
+    6     | expr . DIV expr
+    7     | FUNCTION VAR LPAR expr . RPAR expr
+   12     | expr . SPLIT expr
+   13     | expr . ASSIGN expr
+
+    SPLIT   shift, and go to state 19
+    ASSIGN  shift, and go to state 12
+    PLUS    shift, and go to state 13
+    MINUS   shift, and go to state 14
+    MULT    shift, and go to state 15
+    DIV     shift, and go to state 16
+    RPAR    shift, and go to state 32
+
+
+State 31
+
+    3 expr: expr . PLUS expr
+    4     | expr . MINUS expr
+    5     | expr . MULT expr
+    6     | expr . DIV expr
+    8     | FUNCTION VAR LPAR RPAR expr .
+   12     | expr . SPLIT expr
+   13     | expr . ASSIGN expr
+
+    SPLIT   shift, and go to state 19
+    ASSIGN  shift, and go to state 12
+    PLUS    shift, and go to state 13
+    MINUS   shift, and go to state 14
+    MULT    shift, and go to state 15
+    DIV     shift, and go to state 16
+
+    SPLIT     [reduce using rule 8 (expr)]
+    ASSIGN    [reduce using rule 8 (expr)]
+    PLUS      [reduce using rule 8 (expr)]
+    MINUS     [reduce using rule 8 (expr)]
+    MULT      [reduce using rule 8 (expr)]
+    DIV       [reduce using rule 8 (expr)]
+    $default  reduce using rule 8 (expr)
+
+
+State 32
+
+    7 expr: FUNCTION VAR LPAR expr RPAR . expr
+
+    RETURN    shift, and go to state 1
+    VAR       shift, and go to state 2
+    LPAR      shift, and go to state 3
+    NUM       shift, and go to state 4
+    FUNCTION  shift, and go to state 5
+
+    expr  go to state 33
+
+
+State 33
+
+    3 expr: expr . PLUS expr
+    4     | expr . MINUS expr
+    5     | expr . MULT expr
+    6     | expr . DIV expr
+    7     | FUNCTION VAR LPAR expr RPAR expr .
+   12     | expr . SPLIT expr
+   13     | expr . ASSIGN expr
+
+    SPLIT   shift, and go to state 19
+    ASSIGN  shift, and go to state 12
+    PLUS    shift, and go to state 13
+    MINUS   shift, and go to state 14
+    MULT    shift, and go to state 15
+    DIV     shift, and go to state 16
+
+    SPLIT     [reduce using rule 7 (expr)]
+    ASSIGN    [reduce using rule 7 (expr)]
+    PLUS      [reduce using rule 7 (expr)]
+    MINUS     [reduce using rule 7 (expr)]
+    MULT      [reduce using rule 7 (expr)]
+    DIV       [reduce using rule 7 (expr)]
+    $default  reduce using rule 7 (expr)
