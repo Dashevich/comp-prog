@@ -5,6 +5,7 @@
 
 %code requires {
 	#include "ast.hh"
+	using namespace AST;
 }	
 
 %define api.token.raw

@@ -1,5 +1,4 @@
 #pragma once
-#define AST
 #include <map>
 #include <vector>
 #include <set>
