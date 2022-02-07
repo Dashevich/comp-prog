@@ -6,6 +6,6 @@ int main() {
 	yy::parser parse(res);
 	parse();
 	Context context;
-	value_type code = res->apply(context);
+	value_type code = res->eval(context);
 	std::cout << std::endl << "Program finished with exit code " << code << std::endl;
 }
