@@ -5,6 +5,7 @@
 
 %code requires {
 	#include "ast.hh"
+	using namespace AST;
 }	
 
 %define api.token.raw
@@ -61,8 +62,8 @@ program: expr SPLIT { ast = new Scope($1); }
 expr:	NUM { $$ = $1; }
 	|   expr PLUS expr	{ $$ = new BinOp{std::plus<ValT>(), $1, $3}; }
 	|   expr MINUS expr	{ $$ = new BinOp{std::minus<ValT>(), $1, $3}; }
-	|   expr MULT expr	{ $$ = new BinOp{std::mult<ValT>(), $1, $3}; }
-	|   expr DIV expr	{ $$ = new BinOp{std::div<ValT>(), $1, $3}; }
+	|   expr MULT expr	{ $$ = new BinOp{std::multiplies<ValT>(), $1, $3}; }
+	|   expr DIV expr	{ $$ = new BinOp{std::divides<ValT>(), $1, $3}; }
     |   FUNCTION VAR LPAR expr RPAR expr {$$ = new Function($6, $2, $4); }
     |   FUNCTION VAR LPAR RPAR expr {$$ = new Function($5, $2, nullptr); }
     |	RETURN LPAR expr RPAR {$$ = new Return($3); }
