@@ -56,7 +56,7 @@ public:
 };
 
 struct INode {
-	virtual ValT eval(Context &CX) = 0;
+	virtual ValT eval(Context &CX) const = 0;
 };
 
 template <typename Op>
@@ -65,7 +65,7 @@ class BinOp : public INode {
 	std::unique_ptr<INode> m_lhs;
 	std::unique_ptr<INode> m_rhs;
 public:
-	ValT eval(Context &CX) override {
+	ValT eval(Context &CX) const override {
 		return m_op(m_lhs->eval(CX), m_rhs->eval(CX));
 	}
 	BinOp(Op&& op, INode *lhs, INode *rhs) :
@@ -80,7 +80,7 @@ private:
 public:
 	Scope(INode* expr) : _expr(expr) {}
 
-	virtual value_type eval(Context& CX) override {
+	virtual value_type eval(Context& CX) const override {
 		CX.addScope();
 		_expr->eval(CX);
 		value_type res = CX.getRes();
@@ -94,7 +94,7 @@ class NameGive : public INode {
 public:
 	NameGive(std::string name) : _name(name) {}
 
-	virtual value_type eval(Context &CX) override {
+	virtual value_type eval(Context &CX) const override {
 		return 0; 
 	}	
 	
@@ -110,7 +110,7 @@ class Function : public INode {
 public:
 	Function(INode* expr, INode* name, INode* args) : _expr(expr), _name(name), _arguments(args) {}
 
-	virtual value_type eval(Context &CX) override {
+	virtual value_type eval(Context &CX) const override {
 		CX.addFunc(((NameGive*)_name)->getName(), _expr, _arguments);
 		return 0;
 	}
@@ -122,7 +122,7 @@ class Return : public INode {
 public:
 	Return(INode* expr) : _expr(expr) {}
 
-	virtual value_type eval(Context &CX) {
+	virtual value_type eval(Context &CX) const override {
 		value_type res = _expr->eval(CX);
 		CX.setRes(res);
 		return res;
@@ -137,7 +137,7 @@ public:
 	
 	}
 
-	virtual value_type eval(Context &CX) override {
+	virtual value_type eval(Context &CX) const override {
 		value_type res = _left_child->eval(CX);
 		_right_child->eval(CX);
 		return res;
@@ -152,7 +152,7 @@ public:
 	value_type& get(Context &CX) {
 		return CX.get(((NameGive*)_name)->getName());
 	}
-	value_type eval(Context &CX) {
+	value_type eval(Context &CX) const override {
 		return CX.get(((NameGive*)_name)->getName());
 	}
 };
@@ -164,7 +164,7 @@ public:
 	Assign(Variable* lc, INode* rc) : _left_child(lc), _right_child(rc) {
 	}
 
-	virtual value_type eval(Context &CX) override {
+	virtual value_type eval(Context &CX) const override {
 		return (_left_child->get(CX) = _right_child->eval(CX));
 	}
 };
