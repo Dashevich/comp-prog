@@ -25,12 +25,16 @@ var	[a-zA-Z_]+
 "+"		return yy::parser::token::TOK_PLUS;
 "("		return yy::parser::token::TOK_LPAR;
 ")"		return yy::parser::token::TOK_RPAR;
-"func"	return yy::parser::token::TOK_FUNCTION;
+"function"	return yy::parser::token::TOK_FUNCTION;
 "return"	return yy::parser::token::TOK_RETURN;
 ";"		return yy::parser::token::TOK_SPLIT;
 "="		return yy::parser::token::TOK_ASSIGN;
+"{"		return yy::parser::token::TOK_LBR;
+"}"		return yy::parser::token::TOK_RBR;
+"<<"		return yy::parser::token::TOK_LOGL;
+">>"		return yy::parser::token::TOK_LOGR;
 {num}	{
-		*yylval = new ImVal{std::stoi(yytext)};
+		*yylval = new Value{std::stoi(yytext)};
 		return yy::parser::token::TOK_NUM;
 	}
 {var}	{

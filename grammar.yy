@@ -7,7 +7,6 @@
 	using namespace AST;
 }	
 
-%define api.token.raw
 %define api.value.type { INode* }
 %parse-param {yy::parser::semantic_type &ast}
 %code provides {
@@ -37,6 +36,10 @@
 	RPAR
 	NUM
 	FUNCTION
+	LOGL
+	LOGR
+	LBR
+	RBR
 %nterm expr
 %left ASSIGN
 %left SPLIT
@@ -47,20 +50,24 @@
 %left MOD
 %start program
 %%
-program: expr SPLIT { ast = new Scope($1); }
+program: expr SPLIT { ast = new Scope{$1}; }
 ;
 expr:	NUM { $$ = $1; }
 	|   expr PLUS expr	{ $$ = new BinOp{std::plus<ValT>(), $1, $3}; }
 	|   expr MINUS expr	{ $$ = new BinOp{std::minus<ValT>(), $1, $3}; }
 	|   expr MULT expr	{ $$ = new BinOp{std::multiplies<ValT>(), $1, $3}; }
 	|   expr DIV expr	{ $$ = new BinOp{std::divides<ValT>(), $1, $3}; }
-    |   FUNCTION VAR LPAR expr RPAR expr {$$ = new Function($6, $2, $4); }
+    |	expr SPLIT expr	{ $$ = new BinOp{[](auto lhs, auto rhs){ return rhs; }, $1, $3}; } 
+	|   FUNCTION VAR LPAR expr RPAR expr {$$ = new Function($6, $2, $4); }
     |   FUNCTION VAR LPAR RPAR expr {$$ = new Function($5, $2, nullptr); }
     |	RETURN LPAR expr RPAR {$$ = new Return($3); }
+    |	LOGL expr LOGR {$$ = new Log($2); } 
+    |   VAR LPAR expr RPAR {$$ = new FunctionCall($3, $1); }
+    |   VAR LPAR RPAR {$$ = new FunctionCall(nullptr, $1); }
     |	VAR { $$ = new Variable($1); }
     |	LPAR expr RPAR { $$ = $2; }
-    |	expr SPLIT expr { $$ = new Split($1, $3); }
-    |	expr ASSIGN expr { $$ = new Assign((Variable*)$1, $3); }
+    |	LBR expr RBR { $$ = new Scope{$2}; }
+    |	expr ASSIGN expr { $$ = new Assign{(Variable*)$1, $3}; }
 ;
 %%
 void yy::parser::error(const std::string &err_message) {
