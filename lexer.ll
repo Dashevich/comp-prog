@@ -33,6 +33,7 @@ var	[a-zA-Z_]+
 "}"		return yy::parser::token::TOK_RBR;
 "<<"		return yy::parser::token::TOK_LOGL;
 ">>"		return yy::parser::token::TOK_LOGR;
+","		return yy::parser::token::TOK_TUP;
 {num}	{
 		*yylval = new Value{std::stoi(yytext)};
 		return yy::parser::token::TOK_NUM;

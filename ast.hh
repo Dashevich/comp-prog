@@ -14,13 +14,13 @@ namespace AST {
 using ValT = int;
 class INode;
 class Context {
-	std::vector<value_type> nums;
+	std::vector<ValT> nums;
 	std::map<std::string, std::pair<INode*, INode*>> funcs;
 	using MapT = std::map<std::string, ValT>;
 	std::vector<MapT> ScopeStack;
-	std::vector<std::map<std::string, value_type>> vars;
+	std::vector<std::map<std::string, ValT>> vars;
 public:
-	value_type& get(std::string var) {
+	ValT& get(std::string var) {
 		for(int i = vars.size() - 1; i >= 0; i--) {
 			if (vars[i].find(var) != vars[i].end()) {
 				return vars[i][var];
@@ -29,32 +29,33 @@ public:
 		
 		return vars.back()[var];
 	}
-	void enterScope() {
-		ScopeStack.emplace_back();
-	}
 	void leaveScope() {
 		ScopeStack.pop_back();
+		nums.pop_back();
 	}
 	void addFunc(std::string name, INode* func, INode* args) {
 		funcs[name] = std::make_pair(func, args);
 	}
 	std::pair<INode*, INode*> getFunc(std::string name) {
+		if (funcs.find(name) == funcs.end()) {
+			throw 1;
+		}
 		return funcs[name];
 	}
-	void setRes(value_type v) {
+	void setRes(ValT v) {
 		nums[nums.size() - 1] = v;
 	}
 	void addScope() {
 		vars.push_back({});
 		nums.push_back(0);
 	}
-	value_type getRes() {
+	ValT getRes() {
 		return nums.back();
 	}
 };
 class INode {
 public:
-	virtual ValT eval(Context &CX) const = 0;
+	virtual ValT eval(Context &CX) = 0;
 };
 
 template <typename Op>
@@ -63,7 +64,7 @@ class BinOp : public INode {
 	std::unique_ptr<INode> m_lhs;
 	std::unique_ptr<INode> m_rhs;
 public:
-	ValT eval(Context &CX) const override {
+	ValT eval(Context &CX) override {
 		auto lhs = m_lhs->eval(CX);
 		auto rhs = m_rhs->eval(CX);
 		return m_op(lhs, rhs);
@@ -79,10 +80,10 @@ private:
 	INode* _expr;
 public:
 	Scope(INode* expr) : _expr(expr) {}
-	virtual value_type eval(Context& CX) const override {
+	virtual ValT eval(Context& CX) override {
 		CX.addScope();
 		_expr->eval(CX);
-		value_type res = CX.getRes();
+		ValT res = CX.getRes();
 		CX.leaveScope();
 		return res;
 	}
@@ -96,7 +97,7 @@ public:
 		size = 1 + ((Tuple*)_next)->size;
 	}
 
-	value_type eval(Context& CX) {
+	ValT eval(Context& CX) {
 		return _current->eval(CX);
 	}
 
@@ -113,7 +114,7 @@ class NameGive : public INode {
 	std::string _name;
 public:
 	NameGive(std::string name) : _name(name) {}
-	virtual value_type eval(Context &CX) const override {
+	virtual ValT eval(Context &CX) override {
 		return 0; 
 	}	
 	
@@ -127,7 +128,7 @@ class Function : public INode {
 	INode* _arguments;
 public:
 	Function(INode* expr, INode* name, INode* args) : _expr(expr), _name(name), _arguments(args) {}
-	virtual value_type eval(Context &CX) const override {
+	virtual ValT eval(Context &CX) override {
 		CX.addFunc(((NameGive*)_name)->getName(), _expr, _arguments);
 		return 0;
 	}
@@ -139,7 +140,7 @@ class FunctionCall : public INode {
 public:
 	FunctionCall(INode* argsTuple, INode* name) : _arguments(argsTuple), _name(name) {}
 
-	virtual value_type eval(Context& CX) const override {
+	virtual ValT eval(Context& CX) override {
 		std::pair<INode*, INode*> funcInfo = CX.getFunc(((NameGive*)_name)->getName());
 		INode* expr = funcInfo.first;
 		INode* argNames = funcInfo.second;
@@ -149,7 +150,7 @@ public:
 		Tuple* currentName = (Tuple*)argNames;
 		while(current != nullptr && currentName != nullptr) {
 			NameGive* name = (NameGive*)currentName->getCurrent();
-			value_type val = current->eval(CX);
+			ValT val = current->eval(CX);
 			CX.get(name->getName()) = val;
 
 			current = (Tuple*)current->getNext();
@@ -158,7 +159,7 @@ public:
 		if (current != nullptr) throw 1;
 		if (currentName != nullptr) throw 1;
 
-		value_type res = expr->eval(CX);
+		ValT res = expr->eval(CX);
 		CX.leaveScope();
 		return res;
 	}
@@ -168,8 +169,8 @@ class Return : public INode {
 	INode* _expr;
 public:
 	Return(INode* expr) : _expr(expr) {}
-	virtual value_type eval(Context &CX) const override {
-		value_type res = _expr->eval(CX);
+	virtual ValT eval(Context &CX) override {
+		ValT res = _expr->eval(CX);
 		CX.setRes(res);
 		return res;
 	}
@@ -180,10 +181,10 @@ private:
 	INode* _name;
 public:
 	Variable(INode* name) : _name(name) {}
-	value_type& get(Context &CX) {
+	ValT& get(Context &CX) {
 		return CX.get(((NameGive*)_name)->getName());
 	}
-	value_type eval(Context &CX) const override {
+	ValT eval(Context &CX) override {
 		return CX.get(((NameGive*)_name)->getName());
 	}
 };
@@ -194,7 +195,7 @@ private:
 public:
 	Assign(Variable* lc, INode* rc) : _left_child(lc), _right_child(rc) {
 	}
-	virtual value_type eval(Context &CX) const override {
+	virtual ValT eval(Context &CX) override {
 		return (_left_child->get(CX) = _right_child->eval(CX));
 	}
 };
@@ -206,8 +207,8 @@ public:
 	Log(INode* lc) : _expr(lc) {
 	}
 
-	virtual value_type eval(Context& CX) const override {
-		value_type res = _expr->eval(CX);			
+	virtual ValT eval(Context& CX) override {
+		ValT res = _expr->eval(CX);			
 		std::cout << res << std::endl;
 		return res;
 	}
@@ -215,11 +216,11 @@ public:
 
 class Value : public INode {
 private:
-	value_type _value;
+	ValT _value;
 public:
-	Value(value_type val) : _value(val) {}
+	Value(ValT val) : _value(val) {}
 
-	virtual value_type eval(Context& CX) const override {
+	virtual ValT eval(Context& CX) override {
 		return _value;
 	}
 };
