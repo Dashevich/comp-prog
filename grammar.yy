@@ -53,6 +53,7 @@
 %%
 program: expr SPLIT { ast = new Scope{$1}; }
 ;
+scope: 	LBR expr SPLIT RBR { $$ = new Scope($2); };
 expr:	NUM { $$ = $1; }
 	|	scope { $$ = $1; }
 	|   expr PLUS expr	{ $$ = new BinOp{std::plus<ValT>(), $1, $3}; }
@@ -60,7 +61,7 @@ expr:	NUM { $$ = $1; }
 	|   expr MULT expr	{ $$ = new BinOp{std::multiplies<ValT>(), $1, $3}; }
 	|   expr DIV expr	{ $$ = new BinOp{std::divides<ValT>(), $1, $3}; }
     |	expr SPLIT expr	{ $$ = new BinOp{[](auto lhs, auto rhs){ return rhs; }, $1, $3}; } 
-	|   FUNCTION VAR LPAR named_tuple RPAR scope {$$ = new Function($6, $2, $4); }
+	|   FUNCTION VAR LPAR names RPAR scope {$$ = new Function($6, $2, $4); }
     |   FUNCTION VAR LPAR RPAR scope {$$ = new Function($5, $2, nullptr); }
     |	RETURN LPAR expr RPAR {$$ = new Return($3); }
     |	LOGL expr LOGR {$$ = new Log($2); } 
@@ -71,12 +72,9 @@ expr:	NUM { $$ = $1; }
     |	LBR expr RBR { $$ = new Scope{$2}; }
     |	expr ASSIGN expr { $$ = new Assign{(Variable*)$1, $3}; }
 ;
-scope: 	LBR expr SPLIT RBR { $$ = new Scope($2); };
-
-named_tuple: VAR TUP named_tuple {$$ = new Tuple($1, $3); }
+names: VAR TUP names {$$ = new Tuple($1, $3); }
 	   | VAR {$$ = new Tuple($1, nullptr); }
 ;
-
 tuple: expr TUP tuple {$$ = new Tuple($1, $3); }
      | expr {$$ = new Tuple($1, nullptr); }
 ;
