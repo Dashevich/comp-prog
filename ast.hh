@@ -20,14 +20,13 @@ class Context {
 	std::vector<MapT> ScopeStack;
 	std::vector<std::map<std::string, ValT>> vars;
 public:
-	ValT& get(std::string var) {
-		for(int i = vars.size() - 1; i >= 0; i--) {
-			if (vars[i].find(var) != vars[i].end()) {
-				return vars[i][var];
-			}
+	ValT& get(const std::string &name) {
+		for (auto &Scope : ScopeStack) {
+			auto It = Scope.find(name);
+			if (It != Scope.end())
+				return It->second;
 		}
-		
-		return vars.back()[var];
+		return ScopeStack.back()[name];
 	}
 	void leaveScope() {
 		ScopeStack.pop_back();
@@ -46,7 +45,7 @@ public:
 		nums[nums.size() - 1] = v;
 	}
 	void addScope() {
-		vars.push_back({});
+		ScopeStack.push_back({});
 		nums.push_back(0);
 	}
 	ValT getRes() {
